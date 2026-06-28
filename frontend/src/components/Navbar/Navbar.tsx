@@ -3,11 +3,11 @@ import { Link, useLocation } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import { useScrollSpy } from '../../hooks/useScrollSpy';
 
-const SECTION_IDS = ['hero', 'why-navin', 'features', 'how-it-works', 'faq'] as const;
+const SECTION_IDS = ['hero', 'why-lumenlogistics', 'features', 'how-it-works', 'faq'] as const;
 
 const navLinks = [
   { id: 'hero',         label: 'Hero',         href: '#hero' },
-  { id: 'why-navin',    label: 'Why Navin',    href: '#why-navin' },
+  { id: 'why-lumenlogistics',    label: 'Why LumenLogistics',    href: '#why-lumenlogistics' },
   { id: 'features',     label: 'Features',     href: '#features' },
   { id: 'how-it-works', label: 'How It Works', href: '#how-it-works' },
   { id: 'faq',          label: 'FAQ',          href: '#faq' },
@@ -38,7 +38,7 @@ const Navbar: React.FC = () => {
   };
 
   useEffect(() => {
-    const storedLogo = window.localStorage.getItem('navin-company-logo');
+    const storedLogo = window.localStorage.getItem('lumenlogistics-company-logo');
     setCompanyLogo(storedLogo ?? null);
   }, [location.pathname]);
 
@@ -56,9 +56,9 @@ const Navbar: React.FC = () => {
           {companyLogo ? (
             <img src={companyLogo} alt="Company logo" className="w-[56.44px] h-[55.19px] object-cover rounded-xl border border-white/10" />
           ) : (
-            <img src="/images/logo.svg" alt="Navin Logo" className="w-[56.44px] h-[55.19px] object-contain" />
+            <img src="/images/logo.svg" alt="LumenLogistics Logo" className="w-[56.44px] h-[55.19px] object-contain" />
           )}
-          <span className="bg-white bg-clip-text text-transparent">Navin</span>
+          <span className="bg-white bg-clip-text text-transparent">LumenLogistics</span>
         </Link>
 
         {/* Desktop Menu */}

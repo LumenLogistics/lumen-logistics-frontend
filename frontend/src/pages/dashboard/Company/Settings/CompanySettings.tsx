@@ -7,7 +7,7 @@ import './CompanySettings.css';
 
 const CompanySettings: React.FC = () => {
     const [profile, setProfile] = useState({
-        name: 'Navin Logistics',
+        name: 'LumenLogistics Logistics',
         address: '123 Supply Chain Blvd, Singapore 109332',
     });
 

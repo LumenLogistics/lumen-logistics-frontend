@@ -39,7 +39,7 @@ function exportShipmentsToCSV(shipments: Shipment[], filename?: string): void {
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.href = url;
-  link.download = filename ?? `navin-shipments-${today}.csv`;
+  link.download = filename ?? `lumenlogistics-shipments-${today}.csv`;
   link.click();
   URL.revokeObjectURL(url);
 }
@@ -96,7 +96,7 @@ const Shipments: React.FC = () => {
   const [timeframeFilter, setTimeframeFilter] = useState<'ALL' | '30' | '90'>('ALL');
   const [viewMode, setViewMode] = useState<ViewMode>(() => {
     try {
-      const saved = localStorage.getItem('navin_shipments_view');
+      const saved = localStorage.getItem('lumenlogistics_shipments_view');
       return saved === 'kanban' ? 'kanban' : 'list';
     } catch {
       return 'list';
@@ -120,7 +120,7 @@ const Shipments: React.FC = () => {
     filters: { search: string; status: string; priority: string; timeframe: string };
   }[]>(() => {
     try {
-      const raw = localStorage.getItem('navin_saved_filters');
+      const raw = localStorage.getItem('lumenlogistics_saved_filters');
       return raw ? JSON.parse(raw) : [];
     } catch {
       return [];
@@ -204,7 +204,7 @@ const Shipments: React.FC = () => {
 
     const updated = [...savedFilters, newFilter];
     setSavedFilters(updated);
-    localStorage.setItem('navin_saved_filters', JSON.stringify(updated));
+    localStorage.setItem('lumenlogistics_saved_filters', JSON.stringify(updated));
     setNewFilterName('');
     setIsSavingFilter(false);
   };
@@ -228,7 +228,7 @@ const Shipments: React.FC = () => {
     e.stopPropagation();
     const updated = savedFilters.filter((f) => f.name !== name);
     setSavedFilters(updated);
-    localStorage.setItem('navin_saved_filters', JSON.stringify(updated));
+    localStorage.setItem('lumenlogistics_saved_filters', JSON.stringify(updated));
   };
 
   const { parentRef, virtualizer, handleScroll, scrollToIndex } = useVirtualShipments({
@@ -291,7 +291,7 @@ const Shipments: React.FC = () => {
   const handleExportSelected = () => {
     const selectedShipments = shipments.filter(s => isSelected(s.id));
     if (selectedShipments.length > 0) {
-      exportShipmentsToCSV(selectedShipments, `navin-selected-shipments-${new Date().toISOString().slice(0, 10)}.csv`);
+      exportShipmentsToCSV(selectedShipments, `lumenlogistics-selected-shipments-${new Date().toISOString().slice(0, 10)}.csv`);
     }
   };
 

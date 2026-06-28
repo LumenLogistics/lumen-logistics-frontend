@@ -7,14 +7,14 @@ type FAQItem = {
 
 const faqItems: FAQItem[] = [
     {
-        question: "What is Navin?",
+        question: "What is LumenLogistics?",
         answer:
-            "Navin is a next-generation logistics platform that combines blockchain technology with IoT tracking to provide transparent, tamper-proof shipment management. Every milestone is recorded on-chain, ensuring accountability from pickup to delivery.",
+            "LumenLogistics is a next-generation logistics platform that combines blockchain technology with IoT tracking to provide transparent, tamper-proof shipment management. Every milestone is recorded on-chain, ensuring accountability from pickup to delivery.",
     },
     {
-        question: "How do Stellar payments work on Navin?",
+        question: "How do Stellar payments work on LumenLogistics?",
         answer:
-            "Navin integrates with the Stellar blockchain to handle payments via smart contracts. When a shipment is confirmed, funds are held in escrow and automatically released to the logistics provider upon successful delivery—no manual processing required.",
+            "LumenLogistics integrates with the Stellar blockchain to handle payments via smart contracts. When a shipment is confirmed, funds are held in escrow and automatically released to the logistics provider upon successful delivery—no manual processing required.",
     },
     {
         question: "How does IoT tracking work?",
@@ -22,19 +22,19 @@ const faqItems: FAQItem[] = [
             "Our IoT sensors attached to shipments continuously report GPS location, temperature, humidity, and shock events. This data is logged in real-time and anchored to the blockchain, giving you a verifiable, tamper-proof record of your shipment's journey.",
     },
     {
-        question: "How do I get started with Navin?",
+        question: "How do I get started with LumenLogistics?",
         answer:
             "Simply sign up for an account, choose your role (logistics company or customer), and you'll have immediate access to the dashboard. You can create your first shipment in minutes—our onboarding tour will guide you through each step.",
     },
     {
-        question: "Is my data secure on Navin?",
+        question: "Is my data secure on LumenLogistics?",
         answer:
             "Yes. All sensitive data is encrypted in transit and at rest. Shipment records are anchored to the Stellar blockchain, making them immutable and auditable. Access is controlled through role-based permissions, ensuring only authorized parties can view or modify shipment details.",
     },
     {
-        question: "Which wallets are supported?",
+        question: "Which wallets does LumenLogistics support?",
         answer:
-            "Navin supports any Stellar-compatible wallet, including Freighter, Lobstr, and Solar Wallet. You can connect your wallet directly from the dashboard to manage payments and view on-chain transaction history.",
+            "LumenLogistics supports any Stellar-compatible wallet, including Freighter, Lobstr, and Solar Wallet. You can connect your wallet directly from the dashboard to manage payments and view on-chain transaction history.",
     },
 ];
 

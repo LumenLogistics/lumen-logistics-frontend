@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 
 type Theme = 'dark' | 'light';
 
-const STORAGE_KEY = 'navin-theme';
+const STORAGE_KEY = 'lumenlogistics-theme';
 
 function getSystemPreference(): Theme {
   if (typeof window === 'undefined') return 'dark';

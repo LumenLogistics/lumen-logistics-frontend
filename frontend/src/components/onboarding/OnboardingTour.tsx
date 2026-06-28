@@ -28,7 +28,7 @@ export interface OnboardingTourProps {
 // Helpers
 // ---------------------------------------------------------------------------
 
-const STORAGE_KEY = 'navin_tour_complete';
+const STORAGE_KEY = 'lumenlogistics_tour_complete';
 
 /** Check whether the tour has already been completed */
 export function isTourComplete(): boolean {

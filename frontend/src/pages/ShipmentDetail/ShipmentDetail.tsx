@@ -109,7 +109,7 @@ const ShipmentDetail: React.FC = () => {
         shipmentId: id ? `#${id}` : "#SHP-992834",
         trackingNumber: id ?? "SHP-992834",
         status: currentStatus,
-        sender: { name: "Navin Logistics", address: shipmentHeaderData.originAddress },
+        sender: { name: "LumenLogistics Logistics", address: shipmentHeaderData.originAddress },
         receiver: { name: "Customer", address: shipmentHeaderData.destinationAddress },
         createdAt: "2026-06-20",
         expectedDelivery: shipmentHeaderData.expectedDeliveryDate,

@@ -93,7 +93,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           <div className="rocket-box">
             <Rocket size={20} color="#ffffff" strokeWidth={2.5} />
           </div>
-          {!isCollapsed && <span className="logo-text">Navin</span>}
+          {!isCollapsed && <span className="logo-text">LumenLogistics</span>}
         </div>
       </div>
 

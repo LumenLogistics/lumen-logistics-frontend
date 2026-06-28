@@ -102,7 +102,7 @@ const AcceptInvitation: React.FC = () => {
       <div className="min-h-screen bg-[#07090d] flex items-center justify-center px-4">
         <div className="bg-[#14171e] border border-[#1e293b] rounded-2xl p-8 max-w-sm w-full text-center">
           <CheckCircle2 size={40} className="text-green-400 mx-auto mb-4" />
-          <h2 className="text-lg font-semibold text-white mb-2">Welcome to Navin!</h2>
+          <h2 className="text-lg font-semibold text-white mb-2">Welcome to LumenLogistics!</h2>
           <p className="text-sm text-slate-400 mb-6">
             Your account has been created. You've joined <strong className="text-white">{inviteInfo?.companyName}</strong> as{' '}
             <strong className="text-white">{inviteInfo?.role}</strong>.
@@ -123,7 +123,7 @@ const AcceptInvitation: React.FC = () => {
       <div className="bg-[#14171e] border border-[#1e293b] rounded-2xl p-8 max-w-md w-full">
         {/* Header */}
         <div className="flex items-center gap-3 mb-6">
-          <img src="/images/logo.svg" alt="Navin Logo" className="w-8 h-8" />
+          <img src="/images/logo.svg" alt="LumenLogistics Logo" className="w-8 h-8" />
           <span className="text-xl font-bold text-[#62ffff]">NAVIN</span>
         </div>
 
