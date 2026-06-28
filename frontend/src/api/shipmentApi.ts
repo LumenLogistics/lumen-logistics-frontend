@@ -215,7 +215,7 @@ async function fetchAllShipmentPages(params?: Record<string, string | number | b
 }
 
 export const shipmentApi = {
-  async getAll(params: { limit?: number; page?: number } = {}): Promise<ShipmentsResponse> {
+  async getAll(params: { limit?: number; page?: number; status?: string } = {}): Promise<ShipmentsResponse> {
     const queryParams = new URLSearchParams();
 
     if (typeof params.limit === 'number') {
@@ -224,6 +224,10 @@ export const shipmentApi = {
 
     if (typeof params.page === 'number') {
       queryParams.set('page', String(params.page));
+    }
+
+    if (params.status) {
+      queryParams.set('status', params.status);
     }
 
     const response = await axios.get<BackendResponse>('/api/shipments', {

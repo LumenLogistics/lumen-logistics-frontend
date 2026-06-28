@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Download, Loader2, LayoutGrid, List, Map } from 'lucide-react';
 import { shipmentApi, type Shipment } from '../../api/shipmentApi';
 import type { ShipmentPriority } from '../../api/shipmentApi';
@@ -52,6 +52,7 @@ type ShipmentsView = 'list' | 'kanban' | 'routeMap';
 
 const Shipments: React.FC = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { addToast } = useToast();
   const [shipments, setShipments] = useState<Shipment[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -92,7 +93,11 @@ const Shipments: React.FC = () => {
   };
 
   const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState<'ALL' | 'CREATED' | 'IN_TRANSIT' | 'DELIVERED' | 'CANCELLED'>('ALL');
+  const [statusFilter, setStatusFilter] = useState<'ALL' | 'CREATED' | 'IN_TRANSIT' | 'DELIVERED' | 'CANCELLED'>(() => {
+    const urlStatus = searchParams.get('status');
+    const valid = ['CREATED', 'IN_TRANSIT', 'DELIVERED', 'CANCELLED'] as const;
+    return (valid as readonly string[]).includes(urlStatus ?? '') ? urlStatus as typeof valid[number] : 'ALL';
+  });
   const [timeframeFilter, setTimeframeFilter] = useState<'ALL' | '30' | '90'>('ALL');
   const [priorityFilter, setPriorityFilter] = useState<'ALL' | ShipmentPriority>('ALL');
   const [advancedFilters, setAdvancedFilters] = useState<ShipmentFiltersValues>({
@@ -237,7 +242,7 @@ const Shipments: React.FC = () => {
     setError(null);
 
     shipmentApi
-      .getAll({ limit: PAGE_SIZE, page: currentPage })
+      .getAll({ limit: PAGE_SIZE, page: currentPage, ...(statusFilter !== 'ALL' && { status: statusFilter }) })
       .then((response) => {
         setShipments((prev) =>
           currentPage === 1 ? response.data : [...prev, ...response.data],
@@ -251,7 +256,7 @@ const Shipments: React.FC = () => {
         setIsLoading(false);
         loadingRef.current = false;
       });
-  }, [currentPage]);
+  }, [currentPage, statusFilter]);
 
   // Restore scroll position on mount
   useEffect(() => {
@@ -519,8 +524,30 @@ const Shipments: React.FC = () => {
         </div>
       ) : (
         <>
-          <div className="shipments-summary">
-            Showing {filteredShipments.length}{isAnyFilterActive ? ` of ${shipments.length} loaded` : ` of ${total}`} shipments
+          <div className="shipments-summary" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <span>
+              Showing {filteredShipments.length}{isAnyFilterActive ? ` of ${shipments.length} loaded` : ` of ${total}`} shipments
+            </span>
+            <button
+              type="button"
+              className="verify-button"
+              disabled={currentPage === 1}
+              aria-label="Previous page"
+              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+              style={{ opacity: currentPage === 1 ? 0.4 : 1 }}
+            >
+              Prev
+            </button>
+            <button
+              type="button"
+              className="verify-button"
+              disabled={!hasMore}
+              aria-label="Next page"
+              onClick={() => setCurrentPage((p) => p + 1)}
+              style={{ opacity: !hasMore ? 0.4 : 1 }}
+            >
+              Next
+            </button>
           </div>
 
           {/* Sticky table header */}

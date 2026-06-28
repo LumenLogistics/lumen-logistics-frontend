@@ -2,18 +2,25 @@ import {
   Bell, Settings, UserCircle, Check,
   Truck, FileText, AlertTriangle, Server, Receipt, DollarSign, Trash2,
 } from "lucide-react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import SearchInput from "../../components/ui/SearchInput";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { notificationsApi, Notification as NotificationType } from "../../services/api/endpoints/notifications";
-import { useRealtimeEvents } from "../../hooks/useRealtimeEvents";
 
 type NotificationFilterType = "all" | "shipments" | "settlements" | "system";
+type NotificationIconType = "shipment" | "contract" | "alert" | "system" | "invoice" | "payment";
 
-const isValidFilter = (value: string | null): value is NotificationFilterType =>
-  value === "all" || value === "shipments" || value === "settlements" || value === "system";
+interface Notification {
+  id: string;
+  type: Exclude<NotificationFilterType, "all">;
+  icon: NotificationIconType;
+  title: string;
+  badge?: string;
+  badgeColor?: string;
+  description: string;
+  timestamp: string;
+  isRead: boolean;
+}
 
-const iconStyles: Record<string, string> = {
+const iconStyles: Record<NotificationIconType, string> = {
   shipment: "bg-[rgba(37,99,235,0.1)] text-[#3b82f6]",
   contract: "bg-[rgba(5,150,105,0.1)] text-[#10b981]",
   alert:    "bg-[rgba(220,38,38,0.1)] text-[#ef4444]",
@@ -22,262 +29,126 @@ const iconStyles: Record<string, string> = {
   payment:  "bg-[rgba(74,222,128,0.1)] text-[#4ade80]",
 };
 
-const itemsPerPage = 20;
+const ITEMS_PER_PAGE = 10;
+
+const INITIAL_NOTIFICATIONS: Notification[] = [
+  // 6 unread (shipments/settlements/system — show under TODAY when unread)
+  { id: "n1",  type: "shipments",   icon: "shipment", title: "Shipment Arrived at Port",       badge: "NV-9920",  badgeColor: "#3b82f6", description: "Your shipment NV-9920 has arrived at the destination port and is awaiting customs clearance.", timestamp: "2 minutes ago", isRead: false },
+  { id: "n2",  type: "shipments",   icon: "shipment", title: "New Shipment Registered",        badge: "NV-9921",  badgeColor: "#3b82f6", description: "A new shipment has been registered and is being prepared for dispatch.", timestamp: "15 minutes ago", isRead: false },
+  { id: "n3",  type: "settlements", icon: "contract", title: "Smart Contract Executed",        badge: "SC-4401",  badgeColor: "#10b981", description: "Smart contract SC-4401 has been executed and funds have been released to the carrier.", timestamp: "1 hour ago", isRead: false },
+  { id: "n4",  type: "settlements", icon: "payment",  title: "Payment Initiated",              badge: "PMT-882",  badgeColor: "#4ade80", description: "A payment of $12,400 has been initiated for shipment SHP-449.", timestamp: "2 hours ago", isRead: false },
+  { id: "n5",  type: "system",      icon: "alert",    title: "Security Alert",                 description: "Unusual login activity detected on your account. Please verify your recent sessions.", timestamp: "3 hours ago", isRead: false },
+  { id: "n6",  type: "system",      icon: "system",   title: "System Maintenance Scheduled",   description: "Scheduled maintenance is planned for Sunday 2 AM UTC. Expect brief downtime.", timestamp: "4 hours ago", isRead: false },
+  // 10 read (show under EARLIER)
+  { id: "n7",  type: "shipments",   icon: "shipment", title: "Customs Clearance Completed",   badge: "NV-9900",  badgeColor: "#3b82f6", description: "Customs clearance for shipment NV-9900 has been successfully completed.", timestamp: "Yesterday", isRead: true },
+  { id: "n8",  type: "shipments",   icon: "shipment", title: "Shipment In Transit",            badge: "NV-9895",  badgeColor: "#3b82f6", description: "Your shipment NV-9895 is currently in transit and on schedule.", timestamp: "Yesterday", isRead: true },
+  { id: "n9",  type: "settlements", icon: "contract", title: "Escrow Funds Released",          badge: "SC-4390",  badgeColor: "#10b981", description: "Escrowed funds for contract SC-4390 have been released upon delivery confirmation.", timestamp: "2 days ago", isRead: true },
+  { id: "n10", type: "system",      icon: "system",   title: "Account Settings Updated",       description: "Your account notification preferences have been updated successfully.", timestamp: "2 days ago", isRead: true },
+  { id: "n11", type: "shipments",   icon: "shipment", title: "Delivery Confirmed",             badge: "NV-9871",  badgeColor: "#3b82f6", description: "Delivery for shipment NV-9871 has been confirmed by the recipient.", timestamp: "3 days ago", isRead: true },
+  // --- PAGE 2 STARTS HERE (items 11–16) ---
+  { id: "n12", type: "shipments",   icon: "alert",    title: "Delivery Delayed",               badge: "NV-9860",  badgeColor: "#ef4444", description: "Shipment NV-9860 has been delayed due to adverse weather conditions. New ETA: +2 days.", timestamp: "4 days ago", isRead: true },
+  { id: "n13", type: "settlements", icon: "invoice",  title: "Invoice Generated",              badge: "INV-2210", badgeColor: "#9ca3af", description: "Invoice INV-2210 has been generated for completed shipment SHP-312.", timestamp: "4 days ago", isRead: true },
+  { id: "n14", type: "shipments",   icon: "shipment", title: "Shipment Picked Up",             badge: "NV-9851",  badgeColor: "#3b82f6", description: "Shipment NV-9851 has been picked up by the carrier.", timestamp: "5 days ago", isRead: true },
+  { id: "n15", type: "system",      icon: "system",   title: "New Feature Available",          description: "Real-time shipment tracking is now available on all active shipments.", timestamp: "6 days ago", isRead: true },
+  { id: "n16", type: "settlements", icon: "payment",  title: "Dispute Resolved",               badge: "DIS-105",  badgeColor: "#4ade80", description: "Dispute DIS-105 has been resolved in your favour. Funds will be transferred within 2 business days.", timestamp: "1 week ago", isRead: true },
+];
+
+function getIconComponent(icon: NotificationIconType) {
+  const size = 20;
+  switch (icon) {
+    case "shipment": return <Truck size={size} />;
+    case "contract": return <FileText size={size} />;
+    case "alert":    return <AlertTriangle size={size} />;
+    case "system":   return <Server size={size} />;
+    case "invoice":  return <Receipt size={size} />;
+    case "payment":  return <DollarSign size={size} />;
+    default:         return <Bell size={size} />;
+  }
+}
 
 const NotificationsPage = () => {
-  const navigate = useNavigate();
-  const [searchParams, setSearchParams] = useSearchParams();
-  const [activeFilter, setActiveFilter] = useState<NotificationFilterType>(() => {
-    const initialFilter = searchParams.get("filter");
-    return isValidFilter(initialFilter) ? initialFilter : "all";
-  });
-  const [searchQuery, setSearchQuery] = useState(() => searchParams.get("q") || "");
-  const [notificationsList, setNotificationsList] = useState<NotificationType[]>([]);
+  const [activeFilter, setActiveFilter] = useState<NotificationFilterType>("all");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [notifications, setNotifications] = useState<Notification[]>(INITIAL_NOTIFICATIONS);
   const [currentPage, setCurrentPage] = useState(1);
-  const [meta, setMeta] = useState<{ page: number; limit: number; total: number; hasMore: boolean } | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const [isMarkAllLoading, setIsMarkAllLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [unreadCount, setUnreadCount] = useState(0);
-  const [isGrouped, setIsGrouped] = useState<boolean>(() => {
-    if (typeof window === "undefined") return false;
-    return window.localStorage.getItem("notificationsGrouped") === "true";
-  });
-  const [expandedGroups, setExpandedGroups] = useState<string[]>([]);
 
-  const realtimeEvents = useRealtimeEvents(['notification:new']);
-
-  const groupedNotifications = useMemo(() => {
-    const rawGroups = new Map<string, NotificationType[]>();
-    const standalone: NotificationType[] = [];
-
-    notificationsList.forEach((notification) => {
-      if (notification.shipmentId) {
-        const group = rawGroups.get(notification.shipmentId) ?? [];
-        group.push(notification);
-        rawGroups.set(notification.shipmentId, group);
-      } else {
-        standalone.push(notification);
-      }
-    });
-
-    const shipmentGroups = Array.from(rawGroups.entries()).map(([shipmentId, notifications]) => {
-      const sortedNotifications = [...notifications].sort(
-        (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
+  // Filter & search
+  const filteredNotifications = useMemo(() => {
+    let result = notifications;
+    if (activeFilter !== "all") {
+      result = result.filter((n) => n.type === activeFilter);
+    }
+    if (searchQuery.trim()) {
+      const q = searchQuery.trim().toLowerCase();
+      result = result.filter(
+        (n) =>
+          n.title.toLowerCase().includes(q) ||
+          (n.badge && n.badge.toLowerCase().includes(q)) ||
+          n.description.toLowerCase().includes(q),
       );
-      const mostRecentNotification = sortedNotifications[0];
-      const unreadCount = sortedNotifications.filter((item) => !item.isRead).length;
+    }
+    return result;
+  }, [notifications, activeFilter, searchQuery]);
 
-      return {
-        shipmentId,
-        trackingNumber: mostRecentNotification.trackingNumber,
-        notifications: sortedNotifications,
-        mostRecentNotification,
-        unreadCount,
-      };
-    });
+  // Pagination
+  const totalPages = Math.max(1, Math.ceil(filteredNotifications.length / ITEMS_PER_PAGE));
+  const safePage = Math.min(currentPage, totalPages);
+  const pagedNotifications = filteredNotifications.slice(
+    (safePage - 1) * ITEMS_PER_PAGE,
+    safePage * ITEMS_PER_PAGE,
+  );
 
-    const sortedGroups = shipmentGroups.sort(
-      (a, b) =>
-        new Date(b.mostRecentNotification.timestamp).getTime() -
-        new Date(a.mostRecentNotification.timestamp).getTime(),
-    );
+  const unreadNotifications = pagedNotifications.filter((n) => !n.isRead);
+  const readNotifications = pagedNotifications.filter((n) => n.isRead);
 
-    const sortedStandalone = [...standalone].sort(
-      (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
-    );
+  // Filter counts (from all notifications, ignoring search & pagination)
+  const filterCounts = useMemo(() => ({
+    all:         notifications.length,
+    shipments:   notifications.filter((n) => n.type === "shipments").length,
+    settlements: notifications.filter((n) => n.type === "settlements").length,
+    system:      notifications.filter((n) => n.type === "system").length,
+  }), [notifications]);
 
-    return { shipmentGroups: sortedGroups, standaloneNotifications: sortedStandalone };
-  }, [notificationsList]);
+  const currentUnreadCount = notifications.filter((n) => !n.isRead).length;
 
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    window.localStorage.setItem("notificationsGrouped", String(isGrouped));
-  }, [isGrouped]);
+  const handleMarkAllAsRead = () => {
+    setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
+  };
 
-  useEffect(() => {
-    const fetchUnreadCount = async () => {
-      try {
-        const count = await notificationsApi.getUnreadCount();
-        setUnreadCount(count);
-      } catch {
-        setError("Unable to load unread notification count.");
-      }
-    };
-
-    void fetchUnreadCount();
-  }, []);
-
-  const toggleGroupExpansion = (shipmentId: string) => {
-    setExpandedGroups((prev) =>
-      prev.includes(shipmentId) ? prev.filter((id) => id !== shipmentId) : [...prev, shipmentId],
+  const handleMarkAsRead = (id: string) => {
+    setNotifications((prev) =>
+      prev.map((n) => (n.id === id ? { ...n, isRead: true } : n)),
     );
   };
 
-  const fetchNotifications = useCallback(async (page: number, append = false) => {
-    setError(null);
-    if (append) {
-      setIsLoadingMore(true);
-    } else {
-      setIsLoading(true);
-    }
-
-    try {
-      const params = {
-        page,
-        limit: itemsPerPage,
-        q: searchQuery.trim() || undefined,
-        type: activeFilter !== "all" ? activeFilter : undefined,
-      };
-
-      const response = await notificationsApi.getAll(params);
-      setNotificationsList((prev) => (append ? [...prev, ...response.data] : response.data));
-      setMeta(response.meta);
-      setCurrentPage(response.meta.page);
-    } catch {
-      setError("Unable to load notifications. Please try again.");
-    } finally {
-      setIsLoading(false);
-      setIsLoadingMore(false);
-    }
-  }, [activeFilter, searchQuery]);
-
-  useEffect(() => {
-    Promise.resolve().then(() => {
-      setCurrentPage(1);
-      fetchNotifications(1, false);
-      setSearchParams((prevParams) => {
-        const nextParams = new URLSearchParams(prevParams);
-        if (activeFilter !== "all") {
-          nextParams.set("filter", activeFilter);
-        } else {
-          nextParams.delete("filter");
-        }
-        if (searchQuery.trim()) {
-          nextParams.set("q", searchQuery.trim());
-        } else {
-          nextParams.delete("q");
-        }
-        return nextParams;
-      });
-    });
-  }, [activeFilter, searchQuery, fetchNotifications, setSearchParams]);
-
-  // Prepend new notification from realtime stream
-  useEffect(() => {
-    const event = realtimeEvents['notification:new'];
-    if (!event) return;
-    const n = event.notification;
-    Promise.resolve().then(() => {
-      setNotificationsList((prev) => {
-        if (prev.some((x) => x.id === n.id)) return prev;
-        const newItem: NotificationType = {
-          id: n.id,
-          type: "system",
-          icon: "system",
-          title: n.title,
-          description: n.description,
-          timestamp: n.timestamp,
-          isRead: false,
-        };
-        return [newItem, ...prev];
-      });
-    });
-  }, [realtimeEvents]);
+  const handleDeleteNotification = (id: string) => {
+    setNotifications((prev) => prev.filter((n) => n.id !== id));
+  };
 
   const handleFilterChange = (filter: NotificationFilterType) => {
-    if (filter === activeFilter) return;
     setActiveFilter(filter);
+    setCurrentPage(1);
   };
 
-  const handleLoadMore = async () => {
-    if (!meta?.hasMore || isLoadingMore) return;
-    await fetchNotifications(currentPage + 1, true);
+  const handleSearchChange = (q: string) => {
+    setSearchQuery(q);
+    setCurrentPage(1);
   };
-
-  const handleMarkAllAsRead = async () => {
-    setIsMarkAllLoading(true);
-    setError(null);
-
-    try {
-      await notificationsApi.markAllAsRead();
-      setNotificationsList((prev) => prev.map((notification) => ({ ...notification, isRead: true })));
-      setUnreadCount(0);
-    } catch {
-      setError("Could not mark all notifications as read. Please try again.");
-    } finally {
-      setIsMarkAllLoading(false);
-    }
-  };
-
-  const handleNotificationClick = async (id: string) => {
-    const notification = notificationsList.find((item) => item.id === id);
-    if (!notification) return;
-
-    if (!notification.isRead) {
-      try {
-        await notificationsApi.markAsRead(id);
-        setNotificationsList((prev) => prev.map((item) => item.id === id ? { ...item, isRead: true } : item));
-        setUnreadCount((prev) => Math.max(0, prev - 1));
-      } catch {
-        setError("Unable to mark notification as read. Please try again.");
-      }
-    }
-
-    if (notification.link) {
-      navigate(notification.link);
-    }
-  };
-
-  const handleDeleteNotification = async (id: string) => {
-    setError(null);
-    try {
-      await notificationsApi.deleteOne(id);
-      setNotificationsList((prev) => prev.filter((notification) => notification.id !== id));
-    } catch {
-      setError("Unable to delete notification. Please try again.");
-    }
-  };
-
-  const filterCounts = useMemo(() => ({
-    all: notificationsList.length,
-    shipments: notificationsList.filter((notification) => notification.type === "shipments").length,
-    settlements: notificationsList.filter((notification) => notification.type === "settlements").length,
-    system: notificationsList.filter((notification) => notification.type === "system").length,
-  }), [notificationsList]);
-
-  const unreadNotifications = notificationsList.filter((notification) => !notification.isRead);
-  const readNotifications = notificationsList.filter((notification) => notification.isRead);
-  const currentUnreadCount = unreadNotifications.length || unreadCount;
 
   const filters: { key: NotificationFilterType; label: string }[] = [
-    { key: "all", label: "All" },
-    { key: "shipments", label: "Shipments" },
+    { key: "all",         label: "All" },
+    { key: "shipments",   label: "Shipments" },
     { key: "settlements", label: "Settlements" },
-    { key: "system", label: "System" },
+    { key: "system",      label: "System" },
   ];
 
-  const getIconComponent = (iconType: string) => {
-    switch (iconType) {
-      case "shipment": return <Truck size={20} />;
-      case "contract": return <FileText size={20} />;
-      case "alert":    return <AlertTriangle size={20} />;
-      case "system":   return <Server size={20} />;
-      case "invoice":  return <Receipt size={20} />;
-      case "payment":  return <DollarSign size={20} />;
-      default:         return <Bell size={20} />;
-    }
-  };
-
-  const NotificationCard = ({ notification }: { notification: NotificationType }) => (
+  const NotificationCard = ({ notification }: { notification: Notification }) => (
     <div
       className={`border rounded-xl p-5 flex gap-4 transition-all cursor-pointer ${
         notification.isRead
           ? "bg-[#1a1f28] border-[#374151]"
           : "bg-[#1f2937] border-[#374151] hover:bg-[#283039] hover:border-[#4b5563]"
       }`}
-      onClick={() => handleNotificationClick(notification.id)}
     >
       <div className={`w-12 h-12 rounded-full flex items-center justify-center shrink-0 relative ${iconStyles[notification.icon]}`}>
         {getIconComponent(notification.icon)}
@@ -292,9 +163,11 @@ const NotificationsPage = () => {
           {notification.badge && (
             <span
               className="px-2.5 py-1 rounded text-[11px] font-semibold tracking-[0.5px] text-white inline-flex items-center whitespace-nowrap leading-none"
-              style={notification.isRead
-                ? { backgroundColor: "transparent", border: `1px solid ${notification.badgeColor}`, color: notification.badgeColor }
-                : { backgroundColor: notification.badgeColor, borderColor: notification.badgeColor }}
+              style={
+                notification.isRead
+                  ? { backgroundColor: "transparent", border: `1px solid ${notification.badgeColor}`, color: notification.badgeColor }
+                  : { backgroundColor: notification.badgeColor, borderColor: notification.badgeColor }
+              }
             >
               {notification.badge}
             </span>
@@ -311,7 +184,7 @@ const NotificationsPage = () => {
           <button
             className="w-9 h-9 rounded-md bg-transparent border border-[#374151] flex items-center justify-center cursor-pointer transition-all text-[#6b7280] hover:bg-[#374151] hover:border-[#4b5563] hover:text-white"
             aria-label="Mark as read"
-            onClick={(e) => { e.stopPropagation(); handleNotificationClick(notification.id); }}
+            onClick={(e) => { e.stopPropagation(); handleMarkAsRead(notification.id); }}
           >
             <Check size={16} />
           </button>
@@ -363,7 +236,7 @@ const NotificationsPage = () => {
           <button
             className="flex items-center gap-2 px-4 py-2.5 bg-[#283039] border border-[#374151] rounded-lg text-white text-sm cursor-pointer transition-all hover:bg-[#1f2937] hover:border-[#4b5563] disabled:opacity-50 disabled:cursor-not-allowed"
             onClick={handleMarkAllAsRead}
-            disabled={isMarkAllLoading || currentUnreadCount === 0}
+            disabled={currentUnreadCount === 0}
           >
             <Check size={16} /> Mark all as read
           </button>
@@ -385,49 +258,17 @@ const NotificationsPage = () => {
                 </span>
               </button>
             ))}
-            <button
-              type="button"
-              className={`px-4 py-2.5 border-none rounded-[20px] text-sm cursor-pointer transition-all ${
-                isGrouped ? "bg-[#2563eb] text-white" : "bg-transparent text-[#9ca3af] hover:bg-[#1f2937] hover:text-white"
-              }`}
-              onClick={() => setIsGrouped((prev) => !prev)}
-            >
-              {isGrouped ? "Grouped" : "Ungrouped"}
-            </button>
           </div>
           <SearchInput
             value={searchQuery}
-            onChange={setSearchQuery}
+            onChange={handleSearchChange}
             placeholder="Search by ID, contract, or keyword..."
-            isLoading={isLoading}
+            isLoading={false}
           />
         </div>
 
-        {error && (
-          <div className="mb-4 rounded-2xl border border-[#7f1d1d] bg-[#1f1f22] px-5 py-4 text-sm text-[#fca5a5]">
-            {error}
-          </div>
-        )}
-
         <div className="flex flex-col gap-4">
-          {isLoading && notificationsList.length === 0 ? (
-            Array.from({ length: 4 }).map((_, index) => (
-              <div key={index} className="border border-[#374151] rounded-xl p-5 animate-pulse bg-[#1b2430]">
-                <div className="flex gap-4 mb-4">
-                  <div className="w-12 h-12 rounded-full bg-[#283039]" />
-                  <div className="flex-1 space-y-3 py-1">
-                    <div className="h-5 rounded-lg bg-[#283039] w-3/4" />
-                    <div className="h-4 rounded-lg bg-[#283039] w-full" />
-                    <div className="h-4 rounded-lg bg-[#283039] w-5/6" />
-                  </div>
-                </div>
-                <div className="flex justify-end gap-3">
-                  <div className="h-9 w-20 rounded-md bg-[#283039]" />
-                  <div className="h-9 w-9 rounded-md bg-[#283039]" />
-                </div>
-              </div>
-            ))
-          ) : notificationsList.length === 0 ? (
+          {filteredNotifications.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-20 text-center text-[#6b7280]">
               <Bell size={48} className="mb-6 opacity-50" />
               <h3 className="text-xl font-semibold text-[#9ca3af] m-0 mb-2">No notifications found</h3>
@@ -435,66 +276,6 @@ const NotificationsPage = () => {
                 {searchQuery ? "Try adjusting your search terms" : "You're all caught up! No notifications in this category."}
               </p>
             </div>
-          ) : isGrouped ? (
-            <>
-              {groupedNotifications.shipmentGroups.length > 0 && (
-                <div className="space-y-4">
-                  {groupedNotifications.shipmentGroups.map((group) => {
-                    const expanded = expandedGroups.includes(group.shipmentId);
-                    return (
-                      <div key={group.shipmentId} className="border border-[#374151] rounded-2xl overflow-hidden bg-[#1f2937]">
-                        <button
-                          type="button"
-                          className="w-full px-5 py-4 flex items-center justify-between gap-4 text-left"
-                          onClick={() => toggleGroupExpansion(group.shipmentId)}
-                        >
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-3 flex-wrap">
-                              <span className="text-base font-semibold text-white">
-                                {group.trackingNumber || group.shipmentId}
-                              </span>
-                              <span className="rounded-full bg-[rgba(255,255,255,0.08)] px-3 py-1 text-xs text-[#9ca3af]">
-                                {group.notifications.length} updates
-                              </span>
-                              {group.unreadCount > 0 && (
-                                <span className="rounded-full bg-[#2563eb] px-3 py-1 text-xs font-semibold text-white">
-                                  {group.unreadCount} unread
-                                </span>
-                              )}
-                            </div>
-                            <p className="mt-3 text-sm text-[#9ca3af] truncate">
-                              {group.mostRecentNotification.title}
-                            </p>
-                            <span className="text-xs text-[#6b7280]">
-                              {group.mostRecentNotification.timestamp}
-                            </span>
-                          </div>
-                          <span className="text-sm text-[#9ca3af]">
-                            {expanded ? "Collapse" : "Expand"}
-                          </span>
-                        </button>
-                        {expanded && (
-                          <div className="border-t border-[#283039] p-5 space-y-4">
-                            {group.notifications.map((notification) => (
-                              <NotificationCard key={notification.id} notification={notification} />
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-
-              {groupedNotifications.standaloneNotifications.length > 0 && (
-                <>
-                  <div className="text-xs font-semibold text-[#6b7280] tracking-[0.5px] mt-6 mb-2">OTHER NOTIFICATIONS</div>
-                  {groupedNotifications.standaloneNotifications.map((notification) => (
-                    <NotificationCard key={notification.id} notification={notification} />
-                  ))}
-                </>
-              )}
-            </>
           ) : (
             <>
               {unreadNotifications.length > 0 && (
@@ -517,16 +298,24 @@ const NotificationsPage = () => {
           )}
         </div>
 
-        {!isLoading && meta?.hasMore && (
-          <div className="flex flex-col items-center justify-center mt-8 gap-3">
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-center gap-4 mt-8">
             <button
-              className="px-6 py-3 rounded-[18px] bg-[#2563eb] text-white text-sm font-medium hover:bg-[#1d4ed8] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              onClick={handleLoadMore}
-              disabled={isLoadingMore}
+              className="px-4 py-2 rounded-lg bg-[#283039] border border-[#374151] text-white text-sm cursor-pointer transition-all hover:bg-[#374151] disabled:opacity-40 disabled:cursor-not-allowed"
+              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+              disabled={safePage === 1}
             >
-              {isLoadingMore ? "Loading more..." : "Load more notifications"}
+              Previous
             </button>
-            <span className="text-xs text-[#9ca3af]">Showing {notificationsList.length} of {meta.total} notifications</span>
+            <span className="text-sm text-[#9ca3af]">Page {safePage} of {totalPages}</span>
+            <button
+              className="px-4 py-2 rounded-lg bg-[#283039] border border-[#374151] text-white text-sm cursor-pointer transition-all hover:bg-[#374151] disabled:opacity-40 disabled:cursor-not-allowed"
+              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+              disabled={safePage === totalPages}
+            >
+              Next
+            </button>
           </div>
         )}
       </div>

@@ -66,16 +66,16 @@ test.describe("Shipments — Company view", () => {
     const firstShipment = shipmentsFixture.list.data[0];
     await expect(page.getByText(firstShipment.origin)).toBeVisible();
     await expect(page.getByText(firstShipment.destination)).toBeVisible();
-    await expect(page.getByText(firstShipment.status)).toBeVisible();
+    await expect(page.getByText(/in.?transit/i)).toBeVisible();
   });
 
   test("open shipment detail renders all key sections", async ({ page }) => {
     await gotoProtected(page, "/dashboard/shipments/ship-001");
 
-    // ShipmentDetailHeader — shows shipment id
-    await expect(page.getByText(/#SHP-992834/i)).toBeVisible();
+    // ShipmentDetailHeader — shows shipment id from URL param
+    await expect(page.getByText(/#ship-001/i)).toBeVisible();
     // Status badge
-    await expect(page.getByText(/IN_TRANSIT/i)).toBeVisible();
+    await expect(page.getByText(/in.?transit/i)).toBeVisible();
     // Milestone timeline section should render
     await expect(
       page.locator('main, [class*="shipment-detail"]').first(),

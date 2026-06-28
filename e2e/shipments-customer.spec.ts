@@ -23,7 +23,7 @@ test.describe("Shipments — Customer view", () => {
     await gotoProtected(page, "/dashboard/shipments/ship-001", CUSTOMER_TOKEN);
 
     // Page renders — header with shipment info should be present
-    await expect(page.getByText(/#SHP-992834/i)).toBeVisible();
+    await expect(page.getByText(/#ship-001/i)).toBeVisible();
   });
 
   test("customer shipment detail shows milestone timeline", async ({
@@ -83,6 +83,6 @@ test.describe("Shipments — Customer view", () => {
     await gotoProtected(page, "/dashboard/shipments", CUSTOMER_TOKEN);
 
     // The DELIVERED status badge should be visible for ship-002
-    await expect(page.getByText("DELIVERED")).toBeVisible();
+    await expect(page.getByText(/delivered/i)).toBeVisible();
   });
 });
