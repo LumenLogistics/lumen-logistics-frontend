@@ -2,7 +2,7 @@ import type { Page } from "@playwright/test";
 
 /** A structurally valid JWT that passes the `isValidJWT` check in authInterceptor.ts */
 export const COMPANY_TOKEN =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyLTAwMSIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc1MDg0MDAwMH0.fake_signature_for_e2e_testing_only";
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyLTAwMSIsInJvbGUiOiJjb21wYW55IiwiaWF0IjoxNzUwODQwMDAwfQ.fake_signature_for_e2e_testing_only";
 
 export const CUSTOMER_TOKEN =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyLTAwMiIsInJvbGUiOiJjdXN0b21lciIsImlhdCI6MTc1MDg0MDAwMH0.fake_customer_signature_for_e2e";
