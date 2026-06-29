@@ -70,7 +70,7 @@ const DashboardLayout: React.FC = () => {
         `}
       >
         <div className="flex items-center gap-3 text-xl font-bold mb-12 text-teal-600 dark:text-[#62ffff]">
-          <img src="/images/logo.svg" alt="LumenLogistics Logo" className="w-8 h-8" />
+          <img src="/images/logo.svg" alt="OrbitHaul Logo" className="w-8 h-8" />
           <span>NAVIN</span>
           <button
             className="ml-auto flex lg:hidden bg-transparent border-none text-slate-400 cursor-pointer"
