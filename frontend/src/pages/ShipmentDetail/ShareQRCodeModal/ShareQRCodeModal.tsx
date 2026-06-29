@@ -19,7 +19,7 @@ const ShareQRCodeModal: React.FC<ShareQRCodeModalProps> = ({
   const canvasRef = useRef<HTMLDivElement>(null);
   const [copied, setCopied] = useState(false);
 
-  const trackingUrl = `https://app.lumenlogistics.io/track/${trackingNumber}`;
+  const trackingUrl = `https://app.orbithaul.io/track/${trackingNumber}`;
 
   const handleCopy = async () => {
     try {
