@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { decodeJwt } from 'jose';
-import type { UserRole } from '@utils/rbac';
+import type { AnyRole } from '@utils/rbac';
 
 const AUTH_STORAGE_KEY = 'authToken';
 const AUTH_CHECK_DELAY_MS = 150;
@@ -8,15 +8,15 @@ const AUTH_CHECK_DELAY_MS = 150;
 export interface AuthState {
   isLoading: boolean;
   isAuthenticated: boolean;
-  role: UserRole | null;
+  role: AnyRole | null;
   userId: string | null;
 }
 
-function parseToken(token: string): { role: UserRole | null; userId: string | null; expired: boolean } {
+function parseToken(token: string): { role: AnyRole | null; userId: string | null; expired: boolean } {
   try {
     const payload = decodeJwt(token);
     const expired = typeof payload.exp === 'number' && Date.now() / 1000 > payload.exp;
-    const role = (payload.role as UserRole) || null;
+    const role = (payload.role as AnyRole) || null;
     const userId = (payload.sub ?? (payload.userId as string | undefined) ?? null) as string | null;
     return { role, userId, expired };
   } catch {
@@ -27,7 +27,7 @@ function parseToken(token: string): { role: UserRole | null; userId: string | nu
 export function useAuth(): AuthState {
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [role, setRole] = useState<UserRole | null>(null);
+  const [role, setRole] = useState<AnyRole | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
 
   useEffect(() => {
