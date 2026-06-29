@@ -9,7 +9,7 @@ import React, {
 import type { WalletAdapter } from '../services/stellar/adapters/types';
 import { WALLET_ADAPTERS } from '../services/stellar/adapters';
 
-const LAST_ADAPTER_KEY = 'lumenlogistics-last-wallet';
+const LAST_ADAPTER_KEY = 'orbithaul-last-wallet';
 const NETWORK = (import.meta.env.VITE_STELLAR_NETWORK as 'testnet' | 'mainnet') ?? 'testnet';
 
 export interface WalletContextValue {
