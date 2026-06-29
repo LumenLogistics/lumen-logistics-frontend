@@ -129,7 +129,7 @@ const Hero: React.FC = () => {
           className="font-light leading-[1.75] text-[rgba(200,230,240,0.7)] max-w-[620px]"
           style={{ fontSize: 'clamp(0.95rem, 2vw, 1.1rem)' }}
         >
-          LumenLogistics tokenizes physical cargo on the Stellar blockchain, automating escrow settlements and providing cryptographically verified milestone tracking — from origin to destination.
+          OrbitHaul tokenizes physical cargo on the Stellar blockchain, automating escrow settlements and providing cryptographically verified milestone tracking — from origin to destination.
         </p>
 
         <div className="flex flex-wrap gap-4 justify-center mt-2">
