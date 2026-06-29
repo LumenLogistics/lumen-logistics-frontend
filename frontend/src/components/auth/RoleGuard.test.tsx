@@ -20,7 +20,7 @@ function renderWithAuth(token: string | null, path: string) {
       <AuthProvider>
         <Routes>
           <Route
-            element={<RoleGuard allowedRoles={['company']} />}
+            element={<RoleGuard allowedRoles={['company' as import('@utils/rbac').AnyRole]} />}
           >
             <Route path="/company" element={<div>Company Page</div>} />
           </Route>
