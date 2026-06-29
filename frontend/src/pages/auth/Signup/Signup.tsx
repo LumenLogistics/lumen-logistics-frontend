@@ -82,7 +82,7 @@ const Signup: React.FC = () => {
           <h2 className="text-[2rem] font-bold mb-2 bg-[linear-gradient(135deg,#fff_0%,#00DAC1_100%)] bg-clip-text [-webkit-background-clip:text] [-webkit-text-fill-color:transparent]">
             Create Account
           </h2>
-          <p className="text-[rgba(255,255,255,0.6)] text-[0.95rem]">Join LumenLogistics and experience transparent tracking</p>
+          <p className="text-[rgba(255,255,255,0.6)] text-[0.95rem]">Join OrbitHaul and experience transparent tracking</p>
         </div>
 
         <div className="flex justify-center mb-5">
