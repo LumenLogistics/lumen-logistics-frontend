@@ -39,7 +39,7 @@ function exportShipmentsToCSV(shipments: Shipment[], filename?: string): void {
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.href = url;
-  link.download = filename ?? `lumenlogistics-shipments-${today}.csv`;
+  link.download = filename ?? `orbithaul-shipments-${today}.csv`;
   link.click();
   URL.revokeObjectURL(url);
 }
@@ -118,7 +118,7 @@ const Shipments: React.FC = () => {
     filters: { search: string; status: string; priority: string; timeframe: string };
   }[]>(() => {
     try {
-      const raw = localStorage.getItem('lumenlogistics_saved_filters');
+      const raw = localStorage.getItem('orbithaul_saved_filters');
       return raw ? JSON.parse(raw) : [];
     } catch {
       return [];
@@ -202,7 +202,7 @@ const Shipments: React.FC = () => {
 
     const updated = [...savedFilters, newFilter];
     setSavedFilters(updated);
-    localStorage.setItem('lumenlogistics_saved_filters', JSON.stringify(updated));
+    localStorage.setItem('orbithaul_saved_filters', JSON.stringify(updated));
     setNewFilterName('');
     setIsSavingFilter(false);
   };
@@ -226,7 +226,7 @@ const Shipments: React.FC = () => {
     e.stopPropagation();
     const updated = savedFilters.filter((f) => f.name !== name);
     setSavedFilters(updated);
-    localStorage.setItem('lumenlogistics_saved_filters', JSON.stringify(updated));
+    localStorage.setItem('orbithaul_saved_filters', JSON.stringify(updated));
   };
 
   const { parentRef, virtualizer, handleScroll, scrollToIndex } = useVirtualShipments({
@@ -289,7 +289,7 @@ const Shipments: React.FC = () => {
   const handleExportSelected = () => {
     const selectedShipments = shipments.filter(s => isSelected(s.id));
     if (selectedShipments.length > 0) {
-      exportShipmentsToCSV(selectedShipments, `lumenlogistics-selected-shipments-${new Date().toISOString().slice(0, 10)}.csv`);
+      exportShipmentsToCSV(selectedShipments, `orbithaul-selected-shipments-${new Date().toISOString().slice(0, 10)}.csv`);
     }
   };
 
