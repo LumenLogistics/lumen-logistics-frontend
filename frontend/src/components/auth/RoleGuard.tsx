@@ -8,9 +8,13 @@ interface RoleGuardProps {
   children?: React.ReactNode;
 }
 
-const ROLE_DASHBOARDS: Record<UserRole, string> = {
+const ROLE_DASHBOARDS: Partial<Record<UserRole, string>> = {
   company: '/dashboard',
   customer: '/dashboard/customer',
+  Admin: '/dashboard',
+  Manager: '/dashboard',
+  Viewer: '/dashboard',
+  Driver: '/dashboard',
 };
 
 const RoleGuard: React.FC<RoleGuardProps> = ({ allowedRoles, children }) => {
@@ -38,7 +42,7 @@ const RoleGuard: React.FC<RoleGuardProps> = ({ allowedRoles, children }) => {
   }
 
   if (role && !allowedRoles.includes(role)) {
-    const redirect = ROLE_DASHBOARDS[role] ?? '/dashboard';
+    const redirect = (role && ROLE_DASHBOARDS[role]) ?? '/dashboard';
     return <Navigate to={redirect} replace />;
   }
 
