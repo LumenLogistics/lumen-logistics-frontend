@@ -3,11 +3,11 @@ import { Link, useLocation } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import { useScrollSpy } from '../../hooks/useScrollSpy';
 
-const SECTION_IDS = ['hero', 'why-lumenlogistics', 'features', 'how-it-works', 'faq'] as const;
+const SECTION_IDS = ['hero', 'why-orbithaul', 'features', 'how-it-works', 'faq'] as const;
 
 const navLinks = [
   { id: 'hero',         label: 'Hero',         href: '#hero' },
-  { id: 'why-lumenlogistics',    label: 'Why LumenLogistics',    href: '#why-lumenlogistics' },
+  { id: 'why-orbithaul',    label: 'Why OrbitHaul',    href: '#why-orbithaul' },
   { id: 'features',     label: 'Features',     href: '#features' },
   { id: 'how-it-works', label: 'How It Works', href: '#how-it-works' },
   { id: 'faq',          label: 'FAQ',          href: '#faq' },
@@ -16,7 +16,7 @@ const navLinks = [
 const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [companyLogo, setCompanyLogo] = useState<string | null>(
-    () => window.localStorage.getItem('lumenlogistics-company-logo')
+    () => window.localStorage.getItem('orbithaul-company-logo')
   );
   const location = useLocation();
 
@@ -41,7 +41,7 @@ const Navbar: React.FC = () => {
 
   useEffect(() => {
     const handler = (e: StorageEvent) => {
-      if (e.key === 'lumenlogistics-company-logo') {
+      if (e.key === 'orbithaul-company-logo') {
         setCompanyLogo(e.newValue);
       }
     };
@@ -63,9 +63,9 @@ const Navbar: React.FC = () => {
           {companyLogo ? (
             <img src={companyLogo} alt="Company logo" className="w-[56.44px] h-[55.19px] object-cover rounded-xl border border-white/10" />
           ) : (
-            <img src="/images/logo.svg" alt="LumenLogistics Logo" className="w-[56.44px] h-[55.19px] object-contain" />
+            <img src="/images/logo.svg" alt="OrbitHaul Logo" className="w-[56.44px] h-[55.19px] object-contain" />
           )}
-          <span className="bg-white bg-clip-text text-transparent">LumenLogistics</span>
+          <span className="bg-white bg-clip-text text-transparent">OrbitHaul</span>
         </Link>
 
         {/* Desktop Menu */}
