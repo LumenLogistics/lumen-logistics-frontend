@@ -1,11 +1,11 @@
 import React, { createContext, useContext, useCallback } from 'react';
 import { useAuth } from '@hooks/useAuth';
-import type { UserRole } from '@utils/rbac';
+import type { AnyRole } from '@utils/rbac';
 
 export interface AuthContextValue {
   isLoading: boolean;
   isAuthenticated: boolean;
-  role: UserRole | null;
+  role: AnyRole | null;
   userId: string | null;
   logout: () => void;
 }
