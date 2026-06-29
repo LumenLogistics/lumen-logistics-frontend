@@ -27,12 +27,105 @@ function getServer(): rpc.Server {
   return server;
 }
 
+// All callable methods on the OrbitHaul Shipment contract
 export type ContractMethod =
+  // Admin & init
   | "initialize"
+  | "initialize_multisig"
+  | "update_config"
+  | "upgrade"
+  | "transfer_admin"
+  | "accept_admin"
+  | "propose_action"
+  | "approve_action"
+  | "execute_proposal"
+  | "get_admin"
+  | "get_version"
+  | "get_contract_metadata"
+  | "pause"
+  | "unpause"
+  | "is_paused"
+  // Role management
+  | "add_company"
+  | "add_carrier"
+  | "add_guardian"
+  | "add_operator"
+  | "revoke_role"
+  | "suspend_carrier"
+  | "reactivate_carrier"
+  | "get_role"
+  // Shipment lifecycle
+  | "create_shipment"
+  | "create_shipments_batch"
+  | "update_status"
+  | "cancel_shipment"
+  | "force_cancel_shipment"
+  | "confirm_delivery"
+  | "confirm_partial_delivery"
+  | "handoff_shipment"
+  | "archive_shipment"
+  | "check_deadline"
+  | "update_eta"
+  | "set_shipment_metadata"
+  // Queries
+  | "get_shipment"
+  | "get_shipments_batch"
+  | "get_shipment_count"
+  | "get_shipment_sender"
+  | "get_shipment_receiver"
+  | "get_shipment_carrier"
+  | "get_shipment_creator"
+  | "get_shipment_reference"
+  | "get_status_summary"
+  | "get_shipments_by_status"
+  | "get_active_shipment_count"
+  | "get_shipment_limit"
+  | "set_shipment_limit"
+  | "set_company_shipment_limit"
+  // Escrow
+  | "deposit_escrow"
+  | "release_escrow"
+  | "refund_escrow"
+  | "get_escrow_balance"
+  | "release_milestone_payment"
+  // Milestones
+  | "record_milestone"
+  | "record_milestones_batch"
   | "confirm_milestone"
   | "release"
   | "get_state"
-  | "record_milestone";
+  // Disputes
+  | "raise_dispute"
+  | "resolve_dispute"
+  | "add_dispute_evidence_hash"
+  // IoT & conditions
+  | "report_condition_breach"
+  | "report_geofence_event"
+  | "verify_data_hash"
+  | "submit_iot_reading"
+  // Notes
+  | "append_note_hash"
+  | "get_note_hash"
+  // Analytics & diagnostics
+  | "get_analytics"
+  | "get_health_score"
+  | "get_ttl_health_summary"
+  | "check_all_consistency"
+  | "restore_persistent_diagnostics"
+  | "get_event_count"
+  | "get_hash_algo_version"
+  | "get_canonical_hash"
+  // Carrier whitelist
+  | "add_carrier_to_whitelist"
+  | "remove_carrier_from_whitelist"
+  | "is_carrier_whitelisted"
+  | "list_company_carriers"
+  // Quotas
+  | "set_creation_quota"
+  | "get_creation_quota_status"
+  // Fees
+  | "set_fee_config"
+  | "get_fee_config";
 
 export async function callContractMethod(
   contractId: string,
