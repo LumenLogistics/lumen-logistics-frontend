@@ -20,7 +20,7 @@ import type { TourStep } from '@components/onboarding/OnboardingTour';
 const TOUR_STEPS: TourStep[] = [
   {
     targetId: 'tour-welcome',
-    heading: 'Welcome to LumenLogistics 🎉',
+    heading: 'Welcome to OrbitHaul 🎉',
     body: 'This is your logistics command center. Monitor shipments, track performance, and manage your team — all in one place.',
     placement: 'bottom',
   },
