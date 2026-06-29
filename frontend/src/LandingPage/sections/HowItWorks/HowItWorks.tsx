@@ -34,7 +34,7 @@ function HowItWorks() {
           The Process
         </div>
         <h2 className="font-display font-normal text-[1.5rem] md:text-[2.25rem] lg:text-[3.25rem]">
-          <span className="text-[#62ffff]">How LumenLogistics</span> Works
+          <span className="text-[#62ffff]">How OrbitHaul</span> Works
         </h2>
         <p className="text-[rgba(200,230,240,0.6)] max-w-[520px] text-base leading-relaxed">
           Four steps from wallet connect to settled payment — entirely on-chain.
