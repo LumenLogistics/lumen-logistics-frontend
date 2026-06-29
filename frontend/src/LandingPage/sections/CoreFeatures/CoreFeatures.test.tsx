@@ -43,7 +43,7 @@ describe('CoreFeatures', () => {
     render(<CoreFeatures />);
 
     expect(
-      screen.getByText(/LumenLogistics gives you full visibility into every shipment/i)
+      screen.getByText(/OrbitHaul gives you full visibility into every shipment/i)
     ).toBeInTheDocument();
     expect(screen.getByText(/Hash-and-Emit architecture/i)).toBeInTheDocument();
     expect(screen.getByText(/smart contract escrow/i)).toBeInTheDocument();
