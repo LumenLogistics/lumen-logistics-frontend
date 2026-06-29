@@ -19,7 +19,7 @@ if (import.meta.env.PROD && import.meta.env.VITE_SENTRY_DSN) {
   });
 }
 
-const storedTheme = localStorage.getItem('lumenlogistics-theme');
+const storedTheme = localStorage.getItem('orbithaul-theme');
 const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 if (storedTheme === 'dark' || (!storedTheme && prefersDark)) {
   document.documentElement.classList.add('dark');
