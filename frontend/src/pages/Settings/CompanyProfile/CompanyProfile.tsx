@@ -34,8 +34,8 @@ type CompanyProfileState = {
   branding: BrandingData;
 };
 
-const STORAGE_KEY = 'lumenlogistics-company-profile';
-const LOGO_STORAGE_KEY = 'lumenlogistics-company-logo';
+const STORAGE_KEY = 'orbithaul-company-profile';
+const LOGO_STORAGE_KEY = 'orbithaul-company-logo';
 
 const readStoredProfile = (): CompanyProfileState => {
   if (typeof window === 'undefined') {
@@ -254,7 +254,7 @@ const CompanyProfile: React.FC = () => {
 
     const nextProfile = { ...profile, companyInfo: profile.companyInfo };
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(nextProfile));
-    window.localStorage.setItem('lumenlogistics-company-name', profile.companyInfo.name);
+    window.localStorage.setItem('orbithaul-company-name', profile.companyInfo.name);
     setSavedProfile(nextProfile);
     setCompanyInfoErrors({});
   };
