@@ -1,14 +1,14 @@
 import React from 'react';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuthContext } from '@context/AuthContext';
-import type { UserRole } from '@utils/rbac';
+import type { AnyRole } from '@utils/rbac';
 
 interface RoleGuardProps {
-  allowedRoles: UserRole[];
+  allowedRoles: AnyRole[];
   children?: React.ReactNode;
 }
 
-const ROLE_DASHBOARDS: Partial<Record<UserRole, string>> = {
+const ROLE_DASHBOARDS: Partial<Record<AnyRole, string>> = {
   company: '/dashboard',
   customer: '/dashboard/customer',
   Admin: '/dashboard',
