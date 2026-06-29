@@ -1,10 +1,10 @@
-# LumenLogistics 🌍📦
+# OrbitHaul 🌍📦
 
 > **Next-generation, blockchain-powered supply chain visibility and automated settlements.**
 
-LumenLogistics is a decentralized enterprise frontend built to seamlessly manage tokenized shipments, track immutable transit milestones, and automate financial settlements using the Stellar network and Soroban smart contracts. 
+OrbitHaul is a decentralized enterprise frontend built to seamlessly manage tokenized shipments, track immutable transit milestones, and automate financial settlements using the Stellar network and Soroban smart contracts. 
 
-By bridging physical logistics with blockchain technology, LumenLogistics ensures transparent, high-speed, and low-cost global freight management.
+By bridging physical logistics with blockchain technology, OrbitHaul ensures transparent, high-speed, and low-cost global freight management.
 
 ---
 
