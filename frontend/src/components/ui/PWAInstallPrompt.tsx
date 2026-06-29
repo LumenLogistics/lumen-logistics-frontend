@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Download, X } from 'lucide-react';
 
-const DISMISS_KEY = 'lumenlogistics-pwa-prompt-dismissed';
+const DISMISS_KEY = 'orbithaul-pwa-prompt-dismissed';
 const DISMISS_DURATION_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 
 interface BeforeInstallPromptEvent extends Event {
@@ -51,7 +51,7 @@ const PWAInstallPrompt: React.FC = () => {
     >
       <Download size={18} className="text-primary shrink-0" />
       <p className="flex-1 text-sm text-gray-800 dark:text-gray-100">
-        Install LumenLogistics on your device for offline access
+        Install OrbitHaul on your device for offline access
       </p>
       <button
         onClick={handleInstall}
